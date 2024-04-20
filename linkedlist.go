@@ -65,12 +65,12 @@ func (list *List[DataType]) IsEmpty() bool {
 }
 
 func (list *List[DataType]) Front() ListIterator[DataType] {
-	return createListIterator[DataType](list, list.head)
+	return createListIterator(list, list.head)
 }
 
 // return the next of the last node of the linked list
 func (list *List[DataType]) End() ListIterator[DataType] {
-	return createListIterator[DataType](list, list.tail.next)
+	return createListIterator(list, list.tail.next)
 }
 
 func (list *List[DataType]) Tail() ListIterator[DataType] {
@@ -111,9 +111,9 @@ func (iter *ListIterator[DataType]) GetList() List[DataType] {
 }
 
 func (iter *ListIterator[DataType]) Next() ListIterator[DataType] {
-	return createListIterator[DataType](iter.list, iter.nodePointer.next)
+	return createListIterator(iter.list, iter.nodePointer.next)
 }
 
 func (iter *ListIterator[DataType]) Prev() ListIterator[DataType] {
-	return createListIterator[DataType](iter.list, iter.nodePointer.pre)
+	return createListIterator(iter.list, iter.nodePointer.pre)
 }
