@@ -1,22 +1,22 @@
 /*
-	This file is part of BlockyUtil project. It is licensed under The MIT License.
+This file is part of BlockyUtil project. It is licensed under The MIT License.
 
-	The MIT License (MIT)
-	Copyright (c) 2024 BlockyDeer <blockydeer@outlook.com>
-	Permission is hereby granted, free of charge, to any person obtaining a copy of this
-	software and associated documentation files (the “Software”), to deal in the Software
-	without restriction, including without limitation the rights to use, copy, modify,
-	merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-	permit persons to whom the Software is furnished to do so, subject to the following
-	conditions:
-	The above copyright notice and this permission notice shall be included in all copies
-	or substantial portions of the Software.
-	The Software is provided “as is”, without warranty of any kind, express or implied,
-	including but not limited to the warranties of merchantability, fitness for a
-	particular purpose and noninfringement. In no event shall the authors or copyright
-	holders be liable for any claim, damages or other liability, whether in an action of
-	contract, tort or otherwise, arising from, out of or in connection with the software
-	or the use or other dealings in the Software.
+The MIT License (MIT)
+Copyright (c) 2024 BlockyDeer <blockydeer@outlook.com>
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the “Software”), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+The Software is provided “as is”, without warranty of any kind, express or implied,
+including but not limited to the warranties of merchantability, fitness for a
+particular purpose and noninfringement. In no event shall the authors or copyright
+holders be liable for any claim, damages or other liability, whether in an action of
+contract, tort or otherwise, arising from, out of or in connection with the software
+or the use or other dealings in the Software.
 */
 package blockyutil
 
@@ -43,6 +43,7 @@ func (list *List[T]) PushBack(data T) {
 	} else {
 		list.tail.next = node
 		node.pre = list.tail
+		list.tail = node
 		list.len++
 	}
 }
@@ -70,13 +71,33 @@ func (list *List[DataType]) Front() ListIterator[DataType] {
 
 // return the next of the last node of the linked list
 func (list *List[DataType]) End() ListIterator[DataType] {
-	return createListIterator(list, list.tail.next)
+	return createListIterator(list, list.tail)
 }
 
-func (list *List[DataType]) Tail() ListIterator[DataType] {
-	iter := list.End()
-	return iter.Next()
+func (list *List[DataType]) Foreach(iterator func(iterator ListIterator[DataType], data *DataType)) {
+	iter := list.Front()
+	for ; iter.NotNil(); iter.Next() {
+		iterator(iter, iter.GetData())
+	}
 }
+
+/*
+TODO:
+
+func (list *List[DataType]) Equal(other List[DataType]) bool {
+	iter1 := list.Front()
+	iter2 := other.Front()
+	for iter1.NotNil() && iter2.NotNil() {
+		if *(iter1.GetData()) != *(iter2.GetData()) {
+			return false
+		}
+
+		iter1.Next()
+		iter2.Next()
+	}
+	return true
+}
+*/
 
 func (list *List[T]) Len() uint {
 	return list.len
@@ -95,13 +116,13 @@ func newListNode[T any](data T) *listNode[T] {
 }
 
 type ListIterator[DataType any] struct {
-	list *List[DataType]
+	list        *List[DataType]
 	nodePointer *listNode[DataType]
 }
 
 func createListIterator[DataType any](list *List[DataType], node *listNode[DataType]) ListIterator[DataType] {
-	return ListIterator[DataType] {
-		list: list,
+	return ListIterator[DataType]{
+		list:        list,
 		nodePointer: node,
 	}
 }
@@ -110,10 +131,29 @@ func (iter *ListIterator[DataType]) GetList() List[DataType] {
 	return *(iter.list)
 }
 
-func (iter *ListIterator[DataType]) Next() ListIterator[DataType] {
-	return createListIterator(iter.list, iter.nodePointer.next)
+func (iter *ListIterator[DataType]) GetData() *DataType {
+	return &(iter.nodePointer.data)
 }
 
-func (iter *ListIterator[DataType]) Prev() ListIterator[DataType] {
-	return createListIterator(iter.list, iter.nodePointer.pre)
+func (iter *ListIterator[DataType]) Next() {
+	iter.nodePointer = iter.nodePointer.next
+}
+
+func (iter *ListIterator[DataType]) Prev() {
+	iter.nodePointer = iter.nodePointer.pre
+}
+
+func (iter *ListIterator[DataType]) NotNil() bool {
+	return iter.nodePointer != nil
+}
+
+func (iter *ListIterator[DataType]) Equal(other ListIterator[DataType]) bool {
+	return iter.nodePointer == other.nodePointer
+}
+
+// NOTE: The argument time only accept positive values
+func (iter *ListIterator[DataType]) Advance(time int) {
+	for i := 0; i < time; i++ {
+		iter.Next()
+	}
 }
