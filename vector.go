@@ -66,7 +66,7 @@ func (vec *Vec2[T]) Cross(other Vec2[T]) Vec2[T] {
 	return CreateVec(vec.X*other.Y, vec.Y*other.X)
 }
 func (vec *Vec2[T]) Mod() float64 {
-	return math.Sqrt(float64(vec.X*vec.X + vec.Y * vec.Y))
+	return math.Sqrt(float64(vec.X*vec.X + vec.Y*vec.Y))
 }
 func (vec *Vec2[T]) Normalize() Vec2[T] {
 	mod := vec.Mod()
