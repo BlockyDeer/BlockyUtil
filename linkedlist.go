@@ -61,6 +61,16 @@ func (list *List[T]) PushFront(data T) {
 	}
 }
 
+func (list *List[T]) PopFront() {
+	list.head.next.pre = nil
+	list.len--
+}
+
+func (list *List[T]) PopBack() {
+	list.tail.pre.next = nil
+	list.len--
+}
+
 func (list *List[DataType]) IsEmpty() bool {
 	return list.head == nil
 }
